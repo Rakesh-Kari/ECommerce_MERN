@@ -32,17 +32,22 @@ const Login = () => {
         data,
         { withCredentials: true }
       );
-      console.log(response);
-      toast(response.data.message);
-      dispatch(UserDetailsSlice());
-      navigate("/");
-      return response.data;
+
+      const responseData = response.data;
+      if (response.status === 200) {
+        dispatch(UserDetailsSlice());
+        navigate("/");
+      }
+
+      console.log("The response is:", response);
+
+      console.log(responseData);
+
+      return responseData;
     } catch (err) {
       console.error("The error message is:", err.response.data.message);
     }
   };
-
-  console.log("The data is: ", data);
 
   return (
     <div>

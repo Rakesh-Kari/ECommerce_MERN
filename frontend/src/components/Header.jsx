@@ -1,11 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import Logo from "./Logo";
 import { CiSearch } from "react-icons/ci";
 import { FaRegUserCircle } from "react-icons/fa";
 import { FaShoppingCart } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { UserDetailsSlice } from "../redux/UserSlice";
+import { toast } from "react-toastify";
+import { clearUserDetails } from "../redux/UserSlice";
 
 const Header = () => {
+  const dispatch = useDispatch();
+  const userDetails = useSelector((state) => state.users.userDetails);
+  const [menuDisplay, setMenuDisplay] = useState(false);
+
+  const tokenUserDetails = userDetails && userDetails.user;
+
+  const firstUserDetail =
+    Array.isArray(tokenUserDetails) && tokenUserDetails.length > 0
+      ? tokenUserDetails[0]
+      : null;
+
+  const handleLogout = async () => {
+    console.log("hello");
+    const response = await axios.get(
+      "http://localhost:3000/api/v1/user/logout",
+      {
+        withCredentials: true,
+      }
+    );
+
+    toast(response.data.message);
+    dispatch(clearUserDetails());
+    console.log(userDetails, "in logout");
+    return response.data;
+  };
+  console.log(firstUserDetail);
+
   return (
     <div className="h-16 shadow-md bg-white">
       <div className="h-full container mx-auto flex items-center px-4 justify-between">
@@ -25,9 +57,36 @@ const Header = () => {
           </div>
         </div>
         <div className="flex items-center gap-7">
-          <div className="text-3xl">
-            <FaRegUserCircle />
+          <div className="relative group flex justfy-center">
+            <div
+              className="text-3xl cursor-pointer relative flex justify-center"
+              onClick={() => setMenuDisplay((previous) => !previous)}
+            >
+              {firstUserDetail ? (
+                <div className="border rounded-full px-2 py-1 bg-red-500 text-white hover:bg-red-800 cursor-pointer">
+                  {firstUserDetail.name[0].toUpperCase()}
+                </div>
+              ) : (
+                <div className="text-3xl">
+                  <FaRegUserCircle />
+                </div>
+              )}
+            </div>
+            {menuDisplay && (
+              <div className="absolute bg-white bottom-0 top-11 h-fit p-2 shadow-lg rounded ">
+                <nav>
+                  <Link
+                    to="/admin-panel"
+                    className="whitespace-nowrap hover:bg-slate-100 p-2"
+                    onClick={() => setMenuDisplay((previous) => !previous)}
+                  >
+                    Admin Panel
+                  </Link>
+                </nav>
+              </div>
+            )}
           </div>
+
           <div className="text-2xl relative">
             <span>
               <FaShoppingCart />
@@ -37,11 +96,20 @@ const Header = () => {
             </div>
           </div>
           <div>
-            <Link to="/login">
-              <button className="bg-red-500 px-3 rounded-full py-1 text-white hover:bg-red-700">
-                Login
+            {firstUserDetail ? (
+              <button
+                className="bg-red-500 px-3 rounded-full py-1 text-white hover:bg-red-700"
+                onClick={handleLogout}
+              >
+                Logout
               </button>
-            </Link>
+            ) : (
+              <Link to="/login">
+                <button className="bg-red-500 px-3 rounded-full py-1 text-white hover:bg-red-700">
+                  Login
+                </button>
+              </Link>
+            )}
           </div>
         </div>
       </div>

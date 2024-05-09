@@ -20,11 +20,27 @@ const Signup = () => {
     profilePic: "",
   });
 
-  const navigate = useNavigate();
-
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  console.log("The data before axios is", data);
+
+  const handleUploadPic = async (e) => {
+    const file = e.target.files[0];
+    console.log("Checking the image:");
+
+    try {
+      const imagePic = await ImageToBase64(file);
+      console.log("The image pic is:", imagePic);
+      setData((previous) => ({
+        ...previous,
+        profilePic: imagePic,
+      }));
+    } catch (error) {
+      console.error("Error converting image:", error);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -47,18 +63,7 @@ const Signup = () => {
     }
   };
 
-  const handleUploadPic = async (e) => {
-    const file = e.target.files[0];
-
-    const imagePic = await ImageToBase64(file);
-    console.log("The image pic is:", imagePic);
-    setData((previous) => ({
-      ...previous,
-      profilePic: imagePic,
-    }));
-  };
-
-  console.log("The data is: ", data);
+  console.log("the data after calling axios", data);
 
   return (
     <div>
@@ -83,7 +88,7 @@ const Signup = () => {
             </form>
           </div>
 
-          <form className="pt-6 " onSubmit={handleSubmit}>
+          <form className="pt-6" onSubmit={handleSubmit}>
             <div className="grid my-2">
               <label> Name : </label>
               <div className="bg-slate-200 flex h-10 ">
@@ -157,13 +162,16 @@ const Signup = () => {
               </div>
             </div>
             <div className="flex justify-center">
-              <button className="bg-red-500 text-white px-6 py-2 w-full max-w-[150px] rounded-full hover:scale-110 transition-all mt-4 hover:bg-green-200 hover:text-black">
+              <button
+                type="submit"
+                className="bg-red-500 text-white px-6 py-2 w-full max-w-[150px] rounded-full hover:scale-110 transition-all mt-4 hover:bg-green-200 hover:text-black"
+              >
                 Sign up
               </button>
             </div>
           </form>
           <p className="flex mt-4">
-            Already having an account?{" "}
+            Already have an account?{" "}
             <Link to="/login">
               <div className="ml-2 cursor-pointer text-red-200 hover:underline hover:text-red-600 ">
                 Login

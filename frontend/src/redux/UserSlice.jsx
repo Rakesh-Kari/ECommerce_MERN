@@ -8,12 +8,12 @@ export const UserDetailsSlice = createAsyncThunk(
       const response = await axios.get(
         "http://localhost:3000/api/v1/user/details",
         {
-          withCredentials: true, // Ensure cookies are sent with the request
+          withCredentials: true,
         }
       );
       return response.data;
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response.data.message); // Return just the error message
+      return thunkAPI.rejectWithValue(err.response.data.message);
     }
   }
 );
@@ -25,6 +25,12 @@ const userSlice = createSlice({
     loading: false,
     error: false,
   },
+  reducers: {
+    clearUserDetails: (state) => {
+      state.userDetails = [];
+      console.log(state.userDetails, "in delete");
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(UserDetailsSlice.pending, (state, action) => {
@@ -34,6 +40,7 @@ const userSlice = createSlice({
       .addCase(UserDetailsSlice.fulfilled, (state, action) => {
         state.loading = false;
         state.userDetails = action.payload;
+        console.log(state.userDetails, "in slice");
       })
       .addCase(UserDetailsSlice.rejected, (state, action) => {
         state.loading = false;
@@ -43,3 +50,4 @@ const userSlice = createSlice({
 });
 
 export default userSlice.reducer;
+export const { clearUserDetails } = userSlice.actions;

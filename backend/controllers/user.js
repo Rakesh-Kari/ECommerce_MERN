@@ -12,7 +12,7 @@ const SignupValidation = zod.object({
 });
 
 export const SignUp = asyncErrorHandler(async (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, profilePic } = req.body;
   const success = SignupValidation.safeParse(req.body);
   if (success.error) {
     return res.status(400).json({
@@ -40,6 +40,7 @@ export const SignUp = asyncErrorHandler(async (req, res, next) => {
     name,
     role: "General",
     password: hashedPassword,
+    profilePic,
   });
 
   return res
@@ -97,4 +98,10 @@ export const UserDetails = asyncErrorHandler(async (req, res, next) => {
   console.log(user);
 
   return res.status(200).json({ user, message: "The user has been found" });
+});
+
+export const UserLogout = asyncErrorHandler(async (req, res, next) => {
+  res.clearCookie("token");
+
+  res.status(200).json({ message: "The logout is successfull" });
 });
