@@ -105,3 +105,43 @@ export const UserLogout = asyncErrorHandler(async (req, res, next) => {
 
   res.status(200).json({ message: "The logout is successfull" });
 });
+
+export const getUserDetails = asyncErrorHandler(async (req, res, next) => {
+  const user = await User.find();
+  return res.status(200).json(user);
+});
+
+const updateValidation = zod.object({
+  name: zod.string(),
+  email: zod.string().email(),
+  role: zod.string(),
+});
+
+export const updateUser = asyncErrorHandler(async (req, res, next) => {
+  const success = updateValidation.safeParse(req.body);
+  if (!success) {
+    return next(new errorHandler("Please give proper input validations", 400));
+  }
+
+  const checkingAdmin = await User.findById(req.userId);
+
+  if (!checkingAdmin || checkingAdmin.role !== "ADMIN") {
+    return next(new errorHandler("User is not having admin privileges", 403));
+  }
+
+  const user = await User.findOneAndUpdate(
+    { email: req.body.email },
+    req.body,
+    {
+      new: true,
+    }
+  );
+
+  if (!user) {
+    return next(new errorHandler("User not found", 404));
+  }
+
+  return res
+    .status(200)
+    .json({ user, message: "The data has been updated successfully" });
+});

@@ -18,10 +18,42 @@ export const UserDetailsSlice = createAsyncThunk(
   }
 );
 
+export const getUserDetails = createAsyncThunk(
+  "alluserdetails",
+  async (thunkAPI) => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/v1/user/all-users",
+        { withCredentials: true }
+      );
+      return response.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.respone.data.message);
+    }
+  }
+);
+
+export const getAllProducts = createAsyncThunk(
+  "/getAllProducts",
+  async (thunkAPI) => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/v1/product/allproducts",
+        { withCredentials: true }
+      );
+      return response.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data.message);
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "users",
   initialState: {
     userDetails: [],
+    allDetails: [],
+    allProducts: [],
     loading: false,
     error: false,
   },
@@ -45,6 +77,27 @@ const userSlice = createSlice({
       .addCase(UserDetailsSlice.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(getUserDetails.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(getUserDetails.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allDetails = action.payload;
+      })
+      .addCase(getUserDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getAllProducts.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(getAllProducts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allProducts = action.payload;
+      })
+      .addCase(getAllProducts.rejected, (state, action) => {
+        state.loading = false;
       });
   },
 });

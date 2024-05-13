@@ -1,7 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
+import CategoryList from "../components/CategoryList";
+import axios from "axios";
 
 const Home = () => {
-  return <div>Home</div>;
+  return (
+    <div className="">
+      <CategoryList />
+    </div>
+  );
 };
 
 export default Home;

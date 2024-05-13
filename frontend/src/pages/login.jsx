@@ -38,11 +38,7 @@ const Login = () => {
         dispatch(UserDetailsSlice());
         navigate("/");
       }
-
-      console.log("The response is:", response);
-
-      console.log(responseData);
-
+      toast(response.data.message);
       return responseData;
     } catch (err) {
       console.error("The error message is:", err.response.data.message);

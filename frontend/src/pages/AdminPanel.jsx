@@ -1,19 +1,25 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, Outlet } from "react-router-dom";
 import { FaRegUserCircle } from "react-icons/fa";
+import { getUserDetails } from "../redux/UserSlice";
+import AllUsers from "./AllUsers";
+import ChangeUserRole from "../components/ChangeUserRole";
 
 const AdminPanel = () => {
+  const dispatch = useDispatch();
   const userDetails = useSelector((state) => state.users.userDetails);
 
   const tokenUserDetails = userDetails && userDetails.user;
+
+  useEffect(() => {
+    dispatch(getUserDetails());
+  }, []);
 
   const firstUserDetail =
     Array.isArray(tokenUserDetails) && tokenUserDetails.length > 0
       ? tokenUserDetails[0]
       : null;
-
-  console.log("FirstUserDetails:", firstUserDetail);
 
   return (
     <div className="min-h-[calc(100vh-120px)] md:flex hidden">
@@ -36,7 +42,6 @@ const AdminPanel = () => {
           <p className="text-sm">{firstUserDetail?.role}</p>
         </div>
 
-        {/***navigation */}
         <div>
           <nav className="grid p-4">
             <Link
@@ -46,7 +51,7 @@ const AdminPanel = () => {
               All Users
             </Link>
             <Link
-              to="/admin-panel/products"
+              to="/admin-panel/all-products"
               className="px-2 py-1 hover:bg-slate-100"
             >
               All product

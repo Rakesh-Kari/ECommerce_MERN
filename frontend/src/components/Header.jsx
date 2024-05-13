@@ -3,7 +3,7 @@ import Logo from "./Logo";
 import { CiSearch } from "react-icons/ci";
 import { FaRegUserCircle } from "react-icons/fa";
 import { FaShoppingCart } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { UserDetailsSlice } from "../redux/UserSlice";
@@ -12,6 +12,7 @@ import { clearUserDetails } from "../redux/UserSlice";
 
 const Header = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const userDetails = useSelector((state) => state.users.userDetails);
   const [menuDisplay, setMenuDisplay] = useState(false);
 
@@ -32,11 +33,18 @@ const Header = () => {
     );
 
     toast(response.data.message);
+    navigate("/");
     dispatch(clearUserDetails());
-    console.log(userDetails, "in logout");
     return response.data;
   };
-  console.log(firstUserDetail);
+
+  const ROLE = {
+    ADMIN: "ADMIN",
+    GENERAL: "GENERAL",
+  };
+
+  console.log("The user details", userDetails);
+  console.log("THe first user details:", firstUserDetail);
 
   return (
     <div className="h-16 shadow-md bg-white">
@@ -63,25 +71,29 @@ const Header = () => {
               onClick={() => setMenuDisplay((previous) => !previous)}
             >
               {firstUserDetail ? (
-                <div className="border rounded-full px-2 py-1 bg-red-500 text-white hover:bg-red-800 cursor-pointer">
-                  {firstUserDetail.name[0].toUpperCase()}
-                </div>
-              ) : (
-                <div className="text-3xl">
+                firstUserDetail.profilePic ? (
+                  <img
+                    src={firstUserDetail.profilePic}
+                    className="w-10 h-10 rounded-full"
+                    alt={firstUserDetail.name}
+                  />
+                ) : (
                   <FaRegUserCircle />
-                </div>
-              )}
+                )
+              ) : null}
             </div>
             {menuDisplay && (
               <div className="absolute bg-white bottom-0 top-11 h-fit p-2 shadow-lg rounded ">
                 <nav>
-                  <Link
-                    to="/admin-panel"
-                    className="whitespace-nowrap hover:bg-slate-100 p-2"
-                    onClick={() => setMenuDisplay((previous) => !previous)}
-                  >
-                    Admin Panel
-                  </Link>
+                  {firstUserDetail && firstUserDetail.role === ROLE.ADMIN && (
+                    <Link
+                      to="/admin-panel/all-products"
+                      className="whitespace-nowrap hover:bg-slate-100 p-2"
+                      onClick={() => setMenuDisplay((previous) => !previous)}
+                    >
+                      Admin Panel
+                    </Link>
+                  )}
                 </nav>
               </div>
             )}
