@@ -12,6 +12,8 @@ const AdminProductCard = ({ data, index }) => {
     maxHeight: "100%", // Ensure the image doesn't exceed the container's height
   };
 
+  console.log("This is the admin product card", data);
+
   return (
     <div className="bg-white p-4 rounded">
       <div className="w-40">
@@ -43,14 +45,4 @@ const AdminProductCard = ({ data, index }) => {
   );
 };
 
-const AdminProductList = ({ products }) => {
-  return (
-    <div className="h-screen overflow-y-auto flex flex-col gap-4 p-4">
-      {products.map((product, index) => (
-        <AdminProductCard key={index} data={product} />
-      ))}
-    </div>
-  );
-};
-
-export default AdminProductList;
+export default AdminProductCard;

@@ -11,7 +11,7 @@ const Products = () => {
     (state) => state.users.allProducts.allProducts
   );
 
-  console.log("The list of all the products is", productsList);
+  console.log("Productslist is", productsList);
 
   useEffect(() => {
     dispatch(getAllProducts());

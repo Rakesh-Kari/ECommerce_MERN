@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { categoryWiseProduct } from "../../../backend/controllers/product";
 
 export const UserDetailsSlice = createAsyncThunk(
   "user/fetchUserDetails",
@@ -54,6 +55,7 @@ const userSlice = createSlice({
     userDetails: [],
     allDetails: [],
     allProducts: [],
+    categoryWiseProduct: [],
     loading: false,
     error: false,
   },
