@@ -1,14 +1,18 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
+import { Link } from "react-router-dom";
+import AddToCart from "../utils/AddToCart";
+import { useDispatch } from "react-redux";
+import { countAddToCart } from "../redux/UserSlice";
 
 const HorizontalCardProduct = ({ category, heading }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const loadingList = new Array(13).fill(null);
 
-  const [scroll, setScroll] = useState(0);
   const scrollElement = useRef();
+  const dispatch = useDispatch();
 
   const fetchProductByCategoryInBody = async (category) => {
     try {
@@ -27,13 +31,20 @@ const HorizontalCardProduct = ({ category, heading }) => {
 
   useEffect(() => {
     fetchProductByCategoryInBody(category);
-  }, []);
+  }, [category]);
 
   const scrollRight = () => {
     scrollElement.current.scrollLeft += 300;
   };
   const scrollLeft = () => {
     scrollElement.current.scrollLeft -= 300;
+  };
+
+  const handleAddToCart = async (e, id) => {
+    e.stopPropagation(); // Prevent the Link from being triggered
+    await AddToCart(e, id);
+    dispatch(countAddToCart());
+    console.log("Adding product to cart with id:", id);
   };
 
   return (
@@ -58,33 +69,41 @@ const HorizontalCardProduct = ({ category, heading }) => {
         </button>
 
         {loading
-          ? loadingList.map((product, index) => {
-              return (
-                <div className="w-full min-w-[280px] md:min-w-[320px] max-w-[280px] md:max-w-[320px] h-36 bg-white rounded-sm shadow flex">
-                  <div className="bg-slate-200 h-full p-4 min-w-[120px] md:min-w-[145px] animate-pulse"></div>
-                  <div className="p-4 grid w-full gap-2">
-                    <h2 className="font-medium text-base md:text-lg text-ellipsis line-clamp-1 text-black bg-slate-200 animate-pulse p-1 rounded-full"></h2>
-                    <p className="capitalize text-slate-500 p-1 bg-slate-200 animate-pulse rounded-full"></p>
-                    <div className="flex gap-3 w-full">
-                      <p className="text-red-600 font-medium p-1 bg-slate-200 w-full animate-pulse rounded-full"></p>
-                      <p className="text-slate-500 line-through p-1 bg-slate-200 w-full animate-pulse rounded-full"></p>
-                    </div>
-                    <button className="text-sm  text-white px-3 py-0.5 rounded-full w-full bg-slate-200 animate-pulse"></button>
+          ? loadingList.map((_, index) => (
+              <div
+                key={index}
+                className="w-full min-w-[280px] md:min-w-[320px] max-w-[280px] md:max-w-[320px] h-36 bg-white rounded-sm shadow flex"
+              >
+                <div className="bg-slate-200 h-full p-4 min-w-[120px] md:min-w-[145px] animate-pulse"></div>
+                <div className="p-4 grid w-full gap-2">
+                  <h2 className="font-medium text-base md:text-lg text-ellipsis line-clamp-1 text-black bg-slate-200 animate-pulse p-1 rounded-full"></h2>
+                  <p className="capitalize text-slate-500 p-1 bg-slate-200 animate-pulse rounded-full"></p>
+                  <div className="flex gap-3 w-full">
+                    <p className="text-red-600 font-medium p-1 bg-slate-200 w-full animate-pulse rounded-full"></p>
+                    <p className="text-slate-500 line-through p-1 bg-slate-200 w-full animate-pulse rounded-full"></p>
                   </div>
+                  <button className="text-sm text-white px-3 py-0.5 rounded-full w-full bg-slate-200 animate-pulse"></button>
                 </div>
-              );
-            })
+              </div>
+            ))
           : Array.isArray(products?.categoryProduct) &&
-            products.categoryProduct.map((product, index) => {
-              return (
-                <div className="w-full min-w-[280px] md:min-w-[320px] max-w-[280px] md:max-w-[320px] h-36 bg-white rounded-sm shadow flex">
+            products.categoryProduct.map((product) => (
+              <div
+                key={product._id}
+                className="w-full min-w-[280px] md:min-w-[320px] max-w-[280px] md:max-w-[320px] h-36 bg-white rounded-sm shadow flex relative"
+              >
+                <Link
+                  to={"/product-details/" + product._id}
+                  className="flex w-full"
+                >
                   <div className="bg-slate-200 h-full p-4 min-w-[120px] md:min-w-[145px]">
                     <img
                       src={product.productImage[0]}
                       className="object-scale-down h-full hover:scale-110 transition-all"
+                      alt={product.productName}
                     />
                   </div>
-                  <div className="p-4 grid">
+                  <div className="p-4 mt-2 ">
                     <h2 className="font-medium text-base md:text-lg text-ellipsis line-clamp-1 text-black">
                       {product?.productName}
                     </h2>
@@ -99,13 +118,16 @@ const HorizontalCardProduct = ({ category, heading }) => {
                         {product?.price}
                       </p>
                     </div>
-                    <button className="text-sm bg-red-600 hover:bg-red-700 text-white px-3 py-0.5 rounded-full">
-                      Add to Cart
-                    </button>
                   </div>
-                </div>
-              );
-            })}
+                </Link>
+                <button
+                  className="text-sm bg-red-600 hover:bg-red-700 text-white px-3 py-0.5 rounded-full absolute bottom-2 right-10"
+                  onClick={(e) => handleAddToCart(e, product._id)}
+                >
+                  Add to Cart
+                </button>
+              </div>
+            ))}
       </div>
     </div>
   );

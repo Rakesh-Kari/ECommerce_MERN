@@ -13,7 +13,6 @@ export const authToken = asyncErrorHandler(async (req, res, next) => {
 
   if (decoded) {
     req.userId = decoded._id;
-    console.log(req.userId);
   } else {
     return next(new errorHandler("The decoded value is not correct", 400));
   }

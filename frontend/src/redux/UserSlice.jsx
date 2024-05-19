@@ -49,12 +49,48 @@ export const getAllProducts = createAsyncThunk(
   }
 );
 
+export const getProductById = createAsyncThunk(
+  "getProductById",
+  async (id, thunkAPI) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/v1/product/productById/${id}`,
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data.message);
+    }
+  }
+);
+
+export const countAddToCart = createAsyncThunk(
+  "countAddToCart",
+  async (thunkAPI) => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/api/v1/cart/count",
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.respone.data.message);
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "users",
   initialState: {
     userDetails: [],
     allDetails: [],
     allProducts: [],
+    singleProduct: [],
+    count: [],
     categoryWiseProduct: [],
     loading: false,
     error: false,
@@ -63,6 +99,9 @@ const userSlice = createSlice({
     clearUserDetails: (state) => {
       state.userDetails = [];
       console.log(state.userDetails, "in delete");
+    },
+    clearCount: (state) => {
+      (state.count = []), console.log(state.count, "is deleted");
     },
   },
   extraReducers: (builder) => {
@@ -100,9 +139,30 @@ const userSlice = createSlice({
       })
       .addCase(getAllProducts.rejected, (state, action) => {
         state.loading = false;
+      })
+      .addCase(getProductById.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(getProductById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.singleProduct = action.payload;
+      })
+      .addCase(getProductById.rejected, (state, action) => {
+        (state.loading = false), (state.error = action.payload.message);
+      })
+      .addCase(countAddToCart.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(countAddToCart.fulfilled, (state, action) => {
+        state.loading = false;
+        state.count = action.payload;
+      })
+      .addCase(countAddToCart.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
 export default userSlice.reducer;
-export const { clearUserDetails } = userSlice.actions;
+export const { clearUserDetails, clearCount } = userSlice.actions;

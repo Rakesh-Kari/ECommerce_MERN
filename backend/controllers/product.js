@@ -116,3 +116,70 @@ export const getProductByCategory = asyncErrorHandler(
     });
   }
 );
+
+export const categoryWiseProduct = asyncErrorHandler(async (req, res, next) => {
+  const category = req.params.category;
+
+  const checkingCategory = await Product.findOne({ category });
+  console.log(checkingCategory);
+  if (!checkingCategory) {
+    return next(
+      new errorHandler(`The mentioned ${category} is not present`, 400)
+    );
+  }
+
+  const categoryProduct = await Product.find({ category });
+
+  return res.status(200).json({
+    categoryProduct,
+    message: `All the products in category ${category} have been fetched`,
+  });
+});
+
+export const categoryWiseProductInBody = asyncErrorHandler(
+  async (req, res, next) => {
+    const category = req.body.category;
+
+    const categoryProduct = await Product.find({ category });
+
+    return res.status(200).json({
+      categoryProduct,
+      message: "Products have been fetched successsfully",
+    });
+  }
+);
+
+export const getProductById = asyncErrorHandler(async (req, res, next) => {
+  const id = req.params.id;
+
+  const product = await Product.findById(id);
+
+  if (!product) {
+    return next(new errorHandler("Product is not found in database", 400));
+  }
+
+  return res.status(200).json({
+    product,
+    message: "product has been fetched succesfully",
+  });
+});
+
+export const searchProduct = asyncErrorHandler(async (req, res, next) => {
+  const query = req.query.q;
+
+  const regex = new RegExp(query, "i", "g");
+
+  const product = await Product.find({
+    $or: [
+      { productName: regex },
+      {
+        category: regex,
+      },
+    ],
+  });
+
+  return res.status(200).json({
+    product,
+    message: "Search operation has been done sucessfully",
+  });
+});
