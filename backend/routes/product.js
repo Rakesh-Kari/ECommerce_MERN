@@ -19,7 +19,7 @@ productRouter.get("/allproducts", authToken, adminCheck, getAllProducts);
 productRouter.put("/update", authToken, adminCheck, updateProduct);
 
 productRouter.get("/productByCategory", getProductByCategory);
-productRouter.get("/categoryWiseProduct/:category", categoryWiseProduct);
+productRouter.post("/categoryWiseProduct", categoryWiseProduct);
 productRouter.post("/categoryWiseProductInBody", categoryWiseProductInBody);
 productRouter.get("/productById/:id", getProductById);
 

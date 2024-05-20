@@ -4,7 +4,7 @@ import AddToCart from "../utils/AddToCart";
 import { useDispatch } from "react-redux";
 import { countAddToCart } from "../redux/UserSlice";
 
-const ProductsUsingSearch = ({ loading, data }) => {
+const ProductsUsingSearch = ({ loading, data = [] }) => {
   const dispatch = useDispatch();
   const loadingList = new Array(13).fill(null);
   const handleAddToCart = async (e, id) => {

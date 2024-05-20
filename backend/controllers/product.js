@@ -118,21 +118,17 @@ export const getProductByCategory = asyncErrorHandler(
 );
 
 export const categoryWiseProduct = asyncErrorHandler(async (req, res, next) => {
-  const category = req.params.category;
+  const category = req?.body?.category;
 
-  const checkingCategory = await Product.findOne({ category });
-  console.log(checkingCategory);
-  if (!checkingCategory) {
-    return next(
-      new errorHandler(`The mentioned ${category} is not present`, 400)
-    );
-  }
-
-  const categoryProduct = await Product.find({ category });
+  const categoryProduct = await Product.find({
+    category: {
+      $in: category,
+    },
+  });
 
   return res.status(200).json({
     categoryProduct,
-    message: `All the products in category ${category} have been fetched`,
+    message: `All the products in category have been fetched`,
   });
 });
 
@@ -173,7 +169,7 @@ export const searchProduct = asyncErrorHandler(async (req, res, next) => {
     $or: [
       { productName: regex },
       {
-        category: regex,
+        catgeory: regex,
       },
     ],
   });

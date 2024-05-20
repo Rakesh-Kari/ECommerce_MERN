@@ -145,14 +145,3 @@ export const updateUser = asyncErrorHandler(async (req, res, next) => {
     .status(200)
     .json({ user, message: "The data has been updated successfully" });
 });
-
-export const addToCart = asyncErrorHandler(async (req, res, next) => {
-  const user = await User.findById({
-    _id: req.userId,
-  });
-  console.log("The user is", user);
-  return res.status(200).json({
-    message: "User has bene fetched succesfully",
-    user,
-  });
-});
